@@ -1,0 +1,113 @@
+{
+  "ten": "Nha pho 5m x 20m, 3 tang 1 tum",
+  "ghi_chu": [
+    "So lieu lay tu ho so kien truc that. Moi so tinh bang met.",
+    "Luoi truc: A tai x=0, B tai x=5. Theo chieu sau: 0, 5.0, 7.6, 14.0.",
+    "Than nha sau 14m, phan san truoc va san sau khong xay.",
+    "Cao do san: tang 1 +0.45, tang 2 +3.90, tang 3 +7.50, tum +11.10.",
+    "Chieu cao tuong = chieu cao tang tru chieu cao dam 0.35.",
+    "Dung bang: dung_tu_mo_ta voi noi dung file nay."
+  ],
+  "tang": [
+    {
+      "ten": "Tang1",
+      "cao_do": 0.45,
+      "cao_tuong": 3.1,
+      "san": { "dinh": [[0, 0], [5, 0], [5, 14], [0, 14]], "day": 0.1 },
+      "tuong": [
+        { "diem_dau": [0, 0], "diem_cuoi": [0, 14], "day": 0.22 },
+        { "diem_dau": [5, 0], "diem_cuoi": [5, 14], "day": 0.22 },
+        { "diem_dau": [0, 0], "diem_cuoi": [5, 0], "day": 0.22 },
+        { "diem_dau": [0, 14], "diem_cuoi": [5, 14], "day": 0.22 },
+        { "diem_dau": [0, 7.6], "diem_cuoi": [2.2, 7.6], "day": 0.11 }
+      ],
+      "cot": [
+        { "vi_tri": [0, 0] }, { "vi_tri": [5, 0] },
+        { "vi_tri": [0, 5] }, { "vi_tri": [5, 5] },
+        { "vi_tri": [0, 7.6] }, { "vi_tri": [5, 7.6] },
+        { "vi_tri": [0, 14] }, { "vi_tri": [5, 14] }
+      ],
+      "cua": [
+        { "tuong": 2, "khoang_cach": 2.0, "rong": 1.0, "cao": 2.4, "be_cua": 0 },
+        { "tuong": 3, "khoang_cach": 2.05, "rong": 0.9, "cao": 2.2, "be_cua": 0 },
+        { "tuong": 4, "khoang_cach": 0.6, "rong": 0.75, "cao": 2.1, "be_cua": 0 }
+      ]
+    },
+    {
+      "ten": "Tang2",
+      "cao_do": 3.9,
+      "cao_tuong": 3.25,
+      "san": { "dinh": [[0, -1.2], [5, -1.2], [5, 14], [0, 14]], "day": 0.1 },
+      "tuong": [
+        { "diem_dau": [0, 0], "diem_cuoi": [0, 14], "day": 0.22 },
+        { "diem_dau": [5, 0], "diem_cuoi": [5, 14], "day": 0.22 },
+        { "diem_dau": [0, 0], "diem_cuoi": [5, 0], "day": 0.22 },
+        { "diem_dau": [0, 14], "diem_cuoi": [5, 14], "day": 0.22 },
+        { "diem_dau": [0, 5], "diem_cuoi": [5, 5], "day": 0.11 },
+        { "diem_dau": [0, 7.6], "diem_cuoi": [5, 7.6], "day": 0.11 }
+      ],
+      "cot": [
+        { "vi_tri": [0, 0] }, { "vi_tri": [5, 0] },
+        { "vi_tri": [0, 5] }, { "vi_tri": [5, 5] },
+        { "vi_tri": [0, 7.6] }, { "vi_tri": [5, 7.6] },
+        { "vi_tri": [0, 14] }, { "vi_tri": [5, 14] }
+      ],
+      "cua": [
+        { "tuong": 2, "khoang_cach": 1.7, "rong": 1.6, "cao": 2.2, "be_cua": 0 },
+        { "tuong": 4, "khoang_cach": 0.8, "rong": 0.9, "cao": 2.2, "be_cua": 0 },
+        { "tuong": 5, "khoang_cach": 3.4, "rong": 0.9, "cao": 2.2, "be_cua": 0 },
+        { "tuong": 0, "khoang_cach": 1.5, "rong": 1.2, "cao": 1.5, "be_cua": 0.9 },
+        { "tuong": 1, "khoang_cach": 9.0, "rong": 1.2, "cao": 1.5, "be_cua": 0.9 }
+      ]
+    },
+    {
+      "ten": "Tang3",
+      "cao_do": 7.5,
+      "cao_tuong": 3.25,
+      "san": { "dinh": [[0, -1.2], [5, -1.2], [5, 14], [0, 14]], "day": 0.1 },
+      "tuong": [
+        { "diem_dau": [0, 0], "diem_cuoi": [0, 14], "day": 0.22 },
+        { "diem_dau": [5, 0], "diem_cuoi": [5, 14], "day": 0.22 },
+        { "diem_dau": [0, 0], "diem_cuoi": [5, 0], "day": 0.22 },
+        { "diem_dau": [0, 14], "diem_cuoi": [5, 14], "day": 0.22 },
+        { "diem_dau": [0, 5], "diem_cuoi": [5, 5], "day": 0.11 },
+        { "diem_dau": [0, 7.6], "diem_cuoi": [5, 7.6], "day": 0.11 }
+      ],
+      "cot": [
+        { "vi_tri": [0, 0] }, { "vi_tri": [5, 0] },
+        { "vi_tri": [0, 5] }, { "vi_tri": [5, 5] },
+        { "vi_tri": [0, 7.6] }, { "vi_tri": [5, 7.6] },
+        { "vi_tri": [0, 14] }, { "vi_tri": [5, 14] }
+      ],
+      "cua": [
+        { "tuong": 2, "khoang_cach": 1.7, "rong": 1.6, "cao": 2.2, "be_cua": 0 },
+        { "tuong": 4, "khoang_cach": 0.8, "rong": 0.9, "cao": 2.2, "be_cua": 0 },
+        { "tuong": 5, "khoang_cach": 3.4, "rong": 0.9, "cao": 2.2, "be_cua": 0 },
+        { "tuong": 0, "khoang_cach": 1.5, "rong": 1.2, "cao": 1.5, "be_cua": 0.9 },
+        { "tuong": 1, "khoang_cach": 9.0, "rong": 1.2, "cao": 1.5, "be_cua": 0.9 }
+      ]
+    },
+    {
+      "ten": "Tum",
+      "cao_do": 11.1,
+      "cao_tuong": 2.85,
+      "san": { "dinh": [[0, -1.2], [5, -1.2], [5, 14], [0, 14]], "day": 0.1 },
+      "tuong": [
+        { "diem_dau": [0, 0], "diem_cuoi": [0, 10.5], "day": 0.22 },
+        { "diem_dau": [5, 0], "diem_cuoi": [5, 10.5], "day": 0.22 },
+        { "diem_dau": [0, 0], "diem_cuoi": [5, 0], "day": 0.22 },
+        { "diem_dau": [0, 10.5], "diem_cuoi": [5, 10.5], "day": 0.22 },
+        { "diem_dau": [0, 5], "diem_cuoi": [5, 5], "day": 0.11 }
+      ],
+      "cot": [
+        { "vi_tri": [0, 0] }, { "vi_tri": [5, 0] },
+        { "vi_tri": [0, 5] }, { "vi_tri": [5, 5] },
+        { "vi_tri": [0, 10.5] }, { "vi_tri": [5, 10.5] }
+      ],
+      "cua": [
+        { "tuong": 2, "khoang_cach": 2.0, "rong": 1.0, "cao": 2.2, "be_cua": 0 },
+        { "tuong": 4, "khoang_cach": 3.4, "rong": 0.9, "cao": 2.2, "be_cua": 0 }
+      ]
+    }
+  ]
+}
