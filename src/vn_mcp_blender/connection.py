@@ -46,7 +46,7 @@ def _recv_exactly(sock: socket.socket, n: int) -> bytes:
         chunk = sock.recv(min(remaining, 1 << 20))
         if not chunk:
             raise BlenderConnectionError(
-                "Blender dong ket noi giua chung. Kiem tra addon con bat khong."
+                "Blender đóng kết nối giữa chừng. Kiểm tra addon còn bật không."
             )
         chunks.append(chunk)
         remaining -= len(chunk)
@@ -67,9 +67,9 @@ class BlenderConnection:
 
     def _huong_dan_bat_addon(self) -> str:
         return (
-            f"Khong noi duoc toi Blender o {self.host}:{self.port}. "
-            "Mo Blender, vao thanh ben View3D (phim N), tab 'MCP Xay Dung', "
-            "bam 'Bat ket noi'."
+            f"Không nối được tới Blender ở {self.host}:{self.port}. "
+            "Mở Blender, vào thanh bên khung nhìn 3D (phím N), "
+            "chọn tab 'MCP Xây Dựng', rồi bấm 'Bật kết nối'."
         )
 
     def _mo_ket_noi(self) -> socket.socket:
@@ -94,7 +94,7 @@ class BlenderConnection:
             raise BlenderConnectionError(self._huong_dan_bat_addon()) from exc
         except OSError as exc:
             raise BlenderConnectionError(
-                f"{self._huong_dan_bat_addon()} Chi tiet loi: {exc}"
+                f"{self._huong_dan_bat_addon()} Chi tiết lỗi: {exc}"
             ) from exc
 
     def send(self, command_type: str, params: dict[str, Any] | None = None) -> Any:
@@ -113,27 +113,31 @@ class BlenderConnection:
                 (length,) = struct.unpack(">I", _recv_exactly(sock, 4))
                 if length > MAX_MESSAGE_BYTES:
                     raise BlenderConnectionError(
-                        f"Addon tra ve ban tin qua lon ({length} byte)."
+                        f"Addon trả về bản tin quá lớn ({length} byte)."
                     )
                 body = _recv_exactly(sock, length)
         except socket.timeout as exc:
             raise BlenderConnectionError(
-                f"Blender khong tra loi lenh '{command_type}' trong "
-                f"{self.timeout} giay. Co the dang ban xu ly mot lenh nang, "
-                "hoac addon gap loi. Xem cua so Console trong Blender."
+                f"Blender không trả lời lệnh '{command_type}' trong "
+                f"{self.timeout} giây. Có thể đang bận xử lý một lệnh nặng, "
+                "hoặc addon gặp lỗi. Xem cửa sổ Console trong Blender."
             ) from exc
         except OSError as exc:
             raise BlenderConnectionError(
-                f"Mat ket noi khi dang chay lenh '{command_type}': {exc}"
+                f"Mất kết nối khi đang chạy lệnh '{command_type}': {exc}"
             ) from exc
 
         try:
             response = json.loads(body.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise BlenderConnectionError(f"Addon tra ve du lieu khong doc duoc: {exc}") from exc
+            raise BlenderConnectionError(
+                f"Addon trả về dữ liệu không đọc được: {exc}"
+            ) from exc
 
         if response.get("status") == "error":
-            raise BlenderCommandError(response.get("message", "Loi khong ro tu addon."))
+            raise BlenderCommandError(
+                response.get("message", "Lỗi không rõ từ addon.")
+            )
 
         return response.get("result")
 

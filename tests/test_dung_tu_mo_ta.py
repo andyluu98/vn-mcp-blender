@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from blender_mcp_xaydung import server
+from vn_mcp_blender import server
 
 VI_DU = Path(__file__).parent.parent / "examples" / "nha-pho-5x20m.json"
 

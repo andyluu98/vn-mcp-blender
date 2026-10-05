@@ -17,7 +17,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src"))
 
-from blender_mcp_xaydung.bundled import addon  # noqa: E402
+from vn_mcp_blender.bundled import addon  # noqa: E402
 
 VI_DU = REPO / "examples" / "nha-pho-5x20m.json"
 

@@ -6,7 +6,7 @@ du quyen cua nguoi dung, doc ghi xoa duoc moi file tren may.
 
 Lop nay doc code thanh cay cu phap (AST) roi tim cac mau nguy hiem. No khong
 thay the viec nguoi dung doc code truoc khi chay, chi chan nhung loi ro rang.
-Dat BLENDER_MCP_UNSAFE=1 de tat, nhung chi lam vay khi hieu ro rui ro.
+Dat VN_MCP_UNSAFE=1 de tat, nhung chi lam vay khi hieu ro rui ro.
 """
 
 from __future__ import annotations
@@ -60,14 +60,14 @@ class ScanResult:
         lines += [f"  - {r}" for r in self.reasons]
         lines.append(
             "Neu anh chac chan doan code nay an toan, dat bien moi truong "
-            "BLENDER_MCP_UNSAFE=1 roi khoi dong lai MCP server."
+            "VN_MCP_UNSAFE=1 roi khoi dong lai MCP server."
         )
         return "\n".join(lines)
 
 
 def unsafe_mode_enabled() -> bool:
     """Nguoi dung da tu tat lop soat nay chua."""
-    return os.environ.get("BLENDER_MCP_UNSAFE", "").strip().lower() in {"1", "true", "yes"}
+    return os.environ.get("VN_MCP_UNSAFE", "").strip().lower() in {"1", "true", "yes"}
 
 
 def _attr_chain(node: ast.Attribute) -> list[str]:

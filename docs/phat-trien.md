@@ -1,33 +1,40 @@
-# Huong dan phat trien
+# Hướng dẫn phát triển
 
-## Chuan bi
+## Chuẩn bị
 
 ```bash
-git clone https://github.com/ck15/blender-mcp-xaydung
-cd blender-mcp-xaydung
+git clone https://github.com/andyluu98/vn-mcp-blender
+cd vn-mcp-blender
 pip install -e ".[dev]"
 pytest
 ```
 
-37 test chay duoc ma khong can mo Blender. Chung dung socket gia va file DXF
-tu sinh.
+50 test chạy được mà không cần mở Blender. Chúng dùng socket giả và file DXF
+tự sinh.
 
-Phan hinh hoc co script rieng, chay trong Blender that:
+Phần hình học có script riêng, chạy trong Blender thật:
 
 ```bash
 blender --background --python scripts/tu-kiem-tra.py
 ```
 
-Script nay goi thang cac ham dung hinh roi do lai ket qua. Ma thoat 0 la dat.
+Script này gọi thẳng các hàm dựng hình rồi đo lại kết quả. Mã thoát 0 là đạt.
 
-## Them mot cong cu moi
+Có thêm script dựng cả ngôi nhà mẫu rồi bóc khối lượng:
 
-Mot cong cu can sua **ba cho**. Thieu cho nao la no khong chay.
+```bash
+blender --background --python scripts/dung-vi-du.py
+blender --background --python scripts/dung-vi-du.py -- --render anh.png
+```
 
-### Cho 1: handler trong addon
+## Thêm một công cụ mới
 
-Them mot phuong thuc vao lop `Handlers` trong
-`src/blender_mcp_xaydung/bundled/addon.py`:
+Một công cụ cần sửa **ba chỗ**. Thiếu chỗ nào là nó không chạy.
+
+### Chỗ 1: handler trong addon
+
+Thêm một phương thức vào lớp `Handlers` trong
+`src/vn_mcp_blender/bundled/addon.py`:
 
 ```python
 def create_lan_can(self, diem_dau, diem_cuoi, cao=1.1, day=0.02, cao_do=0.0,
@@ -40,13 +47,13 @@ def create_lan_can(self, diem_dau, diem_cuoi, cao=1.1, day=0.02, cao_do=0.0,
     return {"ten": obj.name, "dai": result["dai"]}
 ```
 
-Khong phai dang ky gi them. Lop `MCPServer` tim handler bang `getattr`, nen
-moi phuong thuc cong khai trong `Handlers` deu goi duoc ngay. Phuong thuc
-bat dau bang dau gach duoi bi chan, dung lam ham noi bo.
+Không phải đăng ký gì thêm. Lớp `MCPServer` tìm handler bằng `getattr`, nên
+mọi phương thức công khai trong `Handlers` đều gọi được ngay. Phương thức bắt
+đầu bằng dấu gạch dưới bị chặn, dùng làm hàm nội bộ.
 
-### Cho 2: tool trong MCP server
+### Chỗ 2: công cụ trong MCP server
 
-Them vao `src/blender_mcp_xaydung/server.py`:
+Thêm vào `src/vn_mcp_blender/server.py`:
 
 ```python
 @mcp.tool()
@@ -66,52 +73,52 @@ def dung_lan_can(
                 cao=cao, day=day, cao_do=cao_do, ten=ten)
 ```
 
-Ba dieu bat buoc:
+Ba điều bắt buộc:
 
-1. **Phai co chu thich kieu cho moi tham so.** FastMCP doc chu ky ham de
-   sinh schema. Thieu chu thich thi tham so do khong xuat hien trong schema.
-2. **Docstring la tai lieu ma AI doc.** Viet ro don vi, truong hop dung, cac
-   gia tri thong dung. Day la thu duy nhat AI co de biet dung tool the nao.
-3. **Khong them `from __future__ import annotations` vao file nay.** FastMCP
-   ban cu doc chu thich truc tiep tu chu ky ham; neu bat che do chu thich
-   dang chuoi, no se bao `issubclass() arg 1 must be a class` khi dang ky tool.
+1. **Phải có chú thích kiểu cho mọi tham số.** FastMCP đọc chữ ký hàm để sinh
+   schema. Thiếu chú thích thì tham số đó không xuất hiện trong schema.
+2. **Docstring là tài liệu mà AI đọc.** Viết rõ đơn vị, trường hợp dùng, các
+   giá trị thông dụng. Đây là thứ duy nhất AI có để biết dùng công cụ thế nào.
+3. **Không thêm `from __future__ import annotations` vào file này.** FastMCP
+   bản cũ đọc chú thích trực tiếp từ chữ ký hàm; nếu bật chế độ chú thích dạng
+   chuỗi, nó sẽ báo `issubclass() arg 1 must be a class` khi đăng ký công cụ.
 
-### Cho 3: tai lieu
+### Chỗ 3: tài liệu
 
-Them vao `docs/cong-cu.md`, dung nhom.
+Thêm vào `docs/cong-cu.md`, đúng nhóm.
 
-### Kiem tra da dang ky duoc chua
+### Kiểm tra đã đăng ký được chưa
 
 ```bash
 python -c "
 import asyncio
-from blender_mcp_xaydung.server import mcp
+from vn_mcp_blender.server import mcp
 tools = asyncio.run(mcp.list_tools())
 print(len(tools), 'tool')
 print([t.name for t in tools])
 "
 ```
 
-## Viet code chay tren may nguoi khac
+## Viết code chạy trên máy người khác
 
-Day la nhung cho hay vo khi addon chay tren mot ban Blender khac:
+Đây là những chỗ hay vỡ khi addon chạy trên một bản Blender khác:
 
-### Tim node shader theo kieu, khong theo ten
+### Tìm node shader theo kiểu, không theo tên
 
-Ten node doi theo ngon ngu giao dien Blender. Nguoi dung dat giao dien tieng
-Nhat thi `nodes["Principled BSDF"]` bao loi.
+Tên node đổi theo ngôn ngữ giao diện Blender. Người dùng đặt giao diện tiếng
+Nhật thì `nodes["Principled BSDF"]` báo lỗi.
 
 ```python
 # Sai
 node = mat.node_tree.nodes["Principled BSDF"]
 
-# Dung
+# Đúng
 node = next(n for n in mat.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
 ```
 
-### Ten input cua node cung doi
+### Tên input của node cũng đổi
 
-`Specular` thanh `Specular IOR Level` tu Blender 4.0. Nen thu lan luot:
+`Specular` thành `Specular IOR Level` từ Blender 4.0. Nên thử lần lượt:
 
 ```python
 def _set_input(node, names, value):
@@ -122,87 +129,110 @@ def _set_input(node, names, value):
     return False
 ```
 
-### Khong viet cung ten enum
+### Không viết cứng tên enum
 
-Danh sach engine render khac nhau giua cac ban. Doc tu `bl_rna` truoc, hoac
-gan trong `try` roi doc thong bao loi:
+Danh sách engine render khác nhau giữa các bản. Đọc từ `bl_rna` trước, hoặc
+gán trong `try` rồi đọc thông báo lỗi:
 
 ```python
 try:
     scene.render.engine = engine
 except TypeError as exc:
-    # Thong bao loi liet ke day du cac ten hop le
+    # Thông báo lỗi liệt kê đầy đủ các tên hợp lệ
     raise ValueError(f"Engine '{engine}' khong dung. {exc}") from exc
 ```
 
-### Mau vat lieu phai dat len node
+### Màu vật liệu phải đặt lên node
 
-`material.diffuse_color` chi doi mau trong khung nhin, khong anh huong ket
-qua render. Mau that nam o input cua node shader.
+`material.diffuse_color` chỉ đổi màu trong khung nhìn, không ảnh hưởng kết quả
+render. Màu thật nằm ở input của node shader.
 
-### bpy khong an toan tu luong phu
+### Độ đục phải đặt 1.0 cho vật liệu đặc
 
-Dung tao thread goi bpy. Addon dung `bpy.app.timers` de moi thu chay tren
-luong chinh. Xem [kien-truc.md](kien-truc.md).
+Bảng `VAT_LIEU` có cột thứ tư là độ đục. Đặt nhầm 0.0 thì cấu kiện tàng hình
+khi render, mà nhìn số đo khối lượng không phát hiện ra. Lỗi này đã từng xảy
+ra, nên `scripts/tu-kiem-tra.py` có hẳn một phép kiểm cho cả 10 vật liệu.
 
-## Them vat lieu moi
+### bpy không an toàn từ luồng phụ
 
-Sua bang `VAT_LIEU` trong `addon.py`:
+Đừng tạo thread gọi bpy. Addon dùng `bpy.app.timers` để mọi thứ chạy trên
+luồng chính. Xem [kien-truc.md](kien-truc.md).
+
+## Hình học: đo lại, đừng tin số báo cáo
+
+Khi thêm cấu kiện mới, luôn kiểm tra **cả hai**:
+
+1. Thể tích hàm tự báo cáo
+2. Thể tích đo từ mesh bằng `addon._mesh_volume(obj)`
+
+Hai số này phải khớp. Lúc phát triển cầu thang, hai số lệch nhau đúng bằng
+phần các bậc, hóa ra tiết diện bậc bị quay ngược chiều so với bản thang nên
+tính ra thể tích âm. Nếu chỉ tin số báo cáo thì lỗi đó lọt.
+
+Khi gộp nhiều khối vào một mesh, mọi tiết diện phải cùng chiều quay, và các
+khối phải lồi. Khối lõm làm Blender chia tam giác sai, thể tích tính ra lệch.
+
+## Thêm vật liệu mới
+
+Sửa bảng `VAT_LIEU` trong `addon.py`:
 
 ```python
 VAT_LIEU = {
-    "be_tong": ((0.60, 0.60, 0.58, 1.0), 0.90, 0.0, 0.0),
-    #            mau RGBA                 nham  kim loai  trong suot
+    "be_tong": ((0.60, 0.60, 0.58, 1.0), 0.90, 0.0, 1.00),
+    #            màu RGBA                 nhám  kim loại  độ đục
 }
 ```
 
-Nho cap nhat bang trong `docs/cong-cu.md` va `guides/vat-lieu.md`.
+Nhớ cập nhật bảng trong `docs/cong-cu.md` và `guides/vat-lieu.md`.
 
-## Them huong dan nghiep vu
+## Thêm hướng dẫn nghiệp vụ
 
-Tao file `.md` moi trong `src/blender_mcp_xaydung/guides/`. Tool `huong_dan`
-tu nhan ra, khong phai dang ky.
+Tạo file `.md` mới trong `src/vn_mcp_blender/guides/`. Công cụ `huong_dan` tự
+nhận ra, không phải đăng ký.
 
-Huong dan la cho de viet nhung kien thuc khong dang nhet vao docstring cua
-tung tool: thu tu lam viec, cac con so quy chuan, loi hay gap.
+Hướng dẫn là chỗ để viết những kiến thức không đáng nhét vào docstring của
+từng công cụ: thứ tự làm việc, các con số quy chuẩn, lỗi hay gặp.
 
-## Lop soat code
+## Lớp soát code
 
-`safe_mode.py` doc code thanh cay cu phap roi tim mau nguy hiem. Them mau
-moi bang cach sua cac tap hop o dau file:
+`safe_mode.py` đọc code thành cây cú pháp rồi tìm mẫu nguy hiểm. Thêm mẫu mới
+bằng cách sửa các tập hợp ở đầu file:
 
-| Tap hop | Chan gi |
+| Tập hợp | Chặn gì |
 |---|---|
-| `BLOCKED_MODULES` | Module khong duoc nhap |
-| `BLOCKED_BUILTINS` | Ham dung san khong duoc goi |
-| `BLOCKED_OS_ATTRS` | Thuoc tinh nguy hiem tren `os` |
-| `BLOCKED_BPY_OPS` | Lenh Blender gay mat du lieu |
-| `BLOCKED_DUNDERS` | Thuoc tinh noi bo dung de pha rao |
+| `BLOCKED_MODULES` | Module không được nhập |
+| `BLOCKED_BUILTINS` | Hàm dựng sẵn không được gọi |
+| `BLOCKED_OS_ATTRS` | Thuộc tính nguy hiểm trên `os` |
+| `BLOCKED_BPY_OPS` | Lệnh Blender gây mất dữ liệu |
+| `BLOCKED_DUNDERS` | Thuộc tính nội bộ dùng để phá rào |
 
-Them mau moi thi them test tuong ung vao `tests/test_safe_mode.py`, ca
-truong hop phai chan lan truong hop khong duoc chan nham.
+Thêm mẫu mới thì thêm test tương ứng vào `tests/test_safe_mode.py`, cả trường
+hợp phải chặn lẫn trường hợp không được chặn nhầm.
 
-Lop nay chan loi ro rang, khong phai tuong lua. Nguoi quyet tam van vuot
-duoc. Muc tieu la chan tai nan, khong phai chan ke tan cong.
+Lớp này chặn lỗi rõ ràng, không phải tường lửa. Người quyết tâm vẫn vượt được.
+Mục tiêu là chặn tai nạn, không phải chặn kẻ tấn công.
 
-## Quy uoc code
+## Quy ước code
 
-- Comment va docstring viet tieng Viet khong dau, de chay duoc tren moi may
-  khong phu thuoc bang ma
-- Ten ham va tham so trong tool MCP dat tieng Viet khong dau, vi AI doc ten
-  do de hieu y nghia
-- Ten ham noi bo trong addon dat tieng Anh theo thoi quen cua bpy
-- Moi so do trong tool tinh bang met
-- Khong them tinh nang chua duoc yeu cau
+- Chú thích và docstring trong mã nguồn viết tiếng Việt **không dấu**, để chạy
+  được trên mọi máy không phụ thuộc bảng mã. Tài liệu và chữ hiện trên giao
+  diện thì viết có dấu.
+- Tên hàm và tham số trong công cụ MCP đặt tiếng Việt không dấu, vì AI đọc tên
+  đó để hiểu ý nghĩa
+- Tên hàm nội bộ trong addon đặt tiếng Anh theo thói quen của bpy
+- Tên collection `MCP_XayDung` để không dấu, vì tên này đi theo file khi xuất
+  sang glb hay fbx
+- Mọi số đo trong công cụ tính bằng mét
+- Không thêm tính năng chưa được yêu cầu
 
-## Phat hanh
+## Phát hành
 
 ```bash
 python -m build
 python -m twine upload dist/*
 ```
 
-Truoc khi phat hanh, chay du ca hai bo kiem tra:
+Trước khi phát hành, chạy đủ cả hai bộ kiểm tra:
 
 ```bash
 pytest

@@ -8,7 +8,7 @@ import math
 import ezdxf
 import pytest
 
-from blender_mcp_xaydung import dxf as dxf_reader
+from vn_mcp_blender import dxf as dxf_reader
 
 
 def _them_hcn(msp, layer, x0, y0, x1, y1):

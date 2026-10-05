@@ -10,7 +10,7 @@ import threading
 
 import pytest
 
-from blender_mcp_xaydung.connection import (
+from vn_mcp_blender.connection import (
     BlenderCommandError,
     BlenderConnection,
     BlenderConnectionError,
@@ -114,7 +114,7 @@ def test_bao_loi_ro_rang_khi_blender_chua_bat():
         conn.send("ping")
 
     text = str(exc.value)
-    assert "MCP Xay Dung" in text, "Thong bao phai chi ro cach bat addon"
+    assert "MCP Xây Dựng" in text, "Thong bao phai chi ro cach bat addon"
 
 
 def test_bao_loi_khi_mat_ket_noi_giua_chung():
@@ -137,7 +137,7 @@ def test_bao_loi_khi_mat_ket_noi_giua_chung():
 
     try:
         conn = BlenderConnection(port=port, timeout=5)
-        with pytest.raises(BlenderConnectionError, match="dong ket noi"):
+        with pytest.raises(BlenderConnectionError, match="đóng kết nối"):
             conn.send("ping")
     finally:
         sock.close()

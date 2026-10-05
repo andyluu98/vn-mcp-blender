@@ -27,12 +27,12 @@ import bpy
 import mathutils
 
 bl_info = {
-    "name": "MCP Xay Dung",
+    "name": "MCP Xây Dựng",
     "author": "Ck15",
     "version": (0, 1, 0),
     "blender": (3, 0, 0),
-    "location": "View3D > Sidebar > MCP Xay Dung",
-    "description": "Dung mo hinh nha 3D tu du lieu kien truc qua MCP",
+    "location": "View3D > Sidebar > MCP Xây Dựng",
+    "description": "Dựng mô hình nhà 3D từ dữ liệu kiến trúc qua MCP",
     "category": "Interface",
 }
 
@@ -839,7 +839,7 @@ class MCPServer:
         self.running = True
 
         bpy.app.timers.register(self._tick, persistent=True)
-        print(f"[MCP Xay Dung] Dang nghe o localhost:{port}")
+        print(f"[MCP Xây Dựng] Đang nghe ở localhost:{port}")
 
     def stop(self) -> None:
         self.running = False
@@ -849,7 +849,7 @@ class MCPServer:
             except OSError:
                 pass
             self.sock = None
-        print("[MCP Xay Dung] Da dung")
+        print("[MCP Xây Dựng] Đã dừng")
 
     def _tick(self):
         """Ham chay dinh ky tren luong chinh, nhan va xu ly tung lenh mot."""
@@ -940,46 +940,46 @@ _server = MCPServer()
 
 class MCPXD_OT_start(bpy.types.Operator):
     bl_idname = "mcp_xaydung.start"
-    bl_label = "Bat ket noi"
-    bl_description = "Mo socket cho MCP server noi vao"
+    bl_label = "Bật kết nối"
+    bl_description = "Mở socket cho MCP server nối vào"
 
     def execute(self, context):
         try:
             _server.start(context.scene.mcp_xaydung_port)
         except OSError as exc:
-            self.report({"ERROR"}, f"Khong mo duoc cong: {exc}")
+            self.report({"ERROR"}, f"Không mở được cổng: {exc}")
             return {"CANCELLED"}
-        self.report({"INFO"}, f"Dang nghe o cong {_server.port}")
+        self.report({"INFO"}, f"Đang nghe ở cổng {_server.port}")
         return {"FINISHED"}
 
 
 class MCPXD_OT_stop(bpy.types.Operator):
     bl_idname = "mcp_xaydung.stop"
-    bl_label = "Tat ket noi"
-    bl_description = "Dong socket"
+    bl_label = "Tắt kết nối"
+    bl_description = "Đóng socket"
 
     def execute(self, context):
         _server.stop()
-        self.report({"INFO"}, "Da dung")
+        self.report({"INFO"}, "Đã dừng")
         return {"FINISHED"}
 
 
 class MCPXD_PT_panel(bpy.types.Panel):
-    bl_label = "MCP Xay Dung"
+    bl_label = "MCP Xây Dựng"
     bl_idname = "MCPXD_PT_panel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "MCP Xay Dung"
+    bl_category = "MCP Xây Dựng"
 
     def draw(self, context):
         layout = self.layout
         layout.prop(context.scene, "mcp_xaydung_port")
 
         if _server.running:
-            layout.label(text=f"Dang chay o cong {_server.port}", icon="CHECKMARK")
+            layout.label(text=f"Đang chạy ở cổng {_server.port}", icon="CHECKMARK")
             layout.operator("mcp_xaydung.stop", icon="PAUSE")
         else:
-            layout.label(text="Chua ket noi", icon="ERROR")
+            layout.label(text="Chưa kết nối", icon="ERROR")
             layout.operator("mcp_xaydung.start", icon="PLAY")
 
 
@@ -988,11 +988,11 @@ _classes = (MCPXD_OT_start, MCPXD_OT_stop, MCPXD_PT_panel)
 
 def register():
     bpy.types.Scene.mcp_xaydung_port = bpy.props.IntProperty(
-        name="Cong",
+        name="Cổng",
         default=DEFAULT_PORT,
         min=1024,
         max=65535,
-        description="Cong TCP addon lang nghe",
+        description="Cổng TCP mà addon lắng nghe",
     )
     for cls in _classes:
         bpy.utils.register_class(cls)

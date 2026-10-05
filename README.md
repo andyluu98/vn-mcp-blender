@@ -1,146 +1,153 @@
-# MCP Xay Dung cho Blender
+# VN MCP Blender
 
-MCP server giup AI dung mo hinh nha 3D trong Blender tu du lieu kien truc,
-doc duoc mat bang DXF tu AutoCAD va boc khoi luong tu chinh mo hinh.
+MCP server giúp AI dựng mô hình nhà 3D trong Blender từ dữ liệu kiến trúc,
+đọc được mặt bằng DXF từ AutoCAD và bóc khối lượng từ chính mô hình.
 
-Viet cho ho so nha o Viet Nam: tuong 220 va 110, cot betong, dam, san, cau
-thang, mai bang. Moi so do tinh bang met.
+Viết riêng cho hồ sơ nhà ở Việt Nam: tường 220 và 110, cột bê tông, dầm, sàn,
+cầu thang, mái bằng. Mọi số đo tính bằng mét.
 
-## Lam duoc gi
+## Làm được gì
 
-| Nhom | Noi dung |
+| Nhóm | Nội dung |
 |---|---|
-| Dung cau kien | Tuong, san, cot, dam, cau thang, mai, khoet lo cua |
-| Doc ban ve | Nhap mat bang DXF, rut truc tim tuong va vi tri cot |
-| Vat lieu | 10 vat lieu xay dung dung san: betong, gach, kinh, go, thep, ngoi |
-| Nhin va render | Chup khung nhin de kiem tra, render anh phoi canh |
-| Xuat | glb, fbx, obj, stl |
-| Boc khoi luong | Do the tich tu hinh hoc that, da tru lo cua |
+| Dựng cấu kiện | Tường, sàn, cột, dầm, cầu thang, mái, khoét lỗ cửa |
+| Đọc bản vẽ | Nhập mặt bằng DXF, rút trục tim tường và vị trí cột |
+| Vật liệu | 10 vật liệu xây dựng dựng sẵn: bê tông, gạch, kính, gỗ, thép, ngói |
+| Nhìn và render | Chụp khung nhìn để kiểm tra, render ảnh phối cảnh |
+| Xuất | glb, fbx, obj, stl |
+| Bóc khối lượng | Đo thể tích từ hình học thật, đã trừ lỗ cửa |
 
-Tong cong 30 cong cu. Danh sach day du o [docs/cong-cu.md](docs/cong-cu.md).
+Tổng cộng 30 công cụ. Danh sách đầy đủ ở [docs/cong-cu.md](docs/cong-cu.md).
 
-## Cai dat
+## Cài đặt
 
-Can hai thu: MCP server va addon trong Blender. Xem huong dan tung buoc o
-[docs/cai-dat.md](docs/cai-dat.md), hoac lam nhanh nhu duoi.
+Cần hai thứ: MCP server và addon trong Blender. Xem hướng dẫn từng bước ở
+[docs/cai-dat.md](docs/cai-dat.md), hoặc làm nhanh như dưới.
 
-### Yeu cau
+### Yêu cầu
 
-- Blender 3.0 tro len
-- Python 3.10 tro len
-- Claude Code, Claude Desktop, hoac bat ky ung dung nao noi duoc MCP
+- Blender 3.0 trở lên
+- Python 3.10 trở lên
+- Claude Code, Claude Desktop, hoặc bất kỳ ứng dụng nào nối được MCP
 
-### Buoc 1: cai goi
-
-```bash
-pip install blender-mcp-xaydung
-```
-
-Hoac cai tu ma nguon:
+### Bước 1: cài gói
 
 ```bash
-git clone https://github.com/ck15/blender-mcp-xaydung
-cd blender-mcp-xaydung
+git clone https://github.com/andyluu98/vn-mcp-blender
+cd vn-mcp-blender
 pip install -e .
 ```
 
-### Buoc 2: cai addon vao Blender
+### Bước 2: cài addon vào Blender
 
 ```bash
-blender-mcp-xaydung install-addon
+vn-mcp-blender install-addon
 ```
 
-Lenh nay tu tim Blender tren may va chep addon vao. Sau do trong Blender:
+Lệnh này tự tìm Blender trên máy và chép addon vào. Sau đó trong Blender:
 
 1. `Edit > Preferences > Add-ons`
-2. Tim **MCP Xay Dung**, tich vao o ben trai de bat
-3. Trong khung nhin 3D, bam phim **N** de mo thanh ben
-4. Chon tab **MCP Xay Dung**, bam **Bat ket noi**
+2. Tìm **MCP Xây Dựng**, tích vào ô bên trái để bật
+3. Trong khung nhìn 3D, bấm phím **N** để mở thanh bên
+4. Chọn tab **MCP Xây Dựng**, bấm **Bật kết nối**
 
-### Buoc 3: khai bao voi Claude
+### Bước 3: khai báo với Claude
 
-Them vao file cau hinh MCP:
+Thêm vào file cấu hình MCP:
 
 ```json
 {
   "mcpServers": {
-    "blender-xaydung": {
-      "command": "blender-mcp-xaydung"
+    "vn-blender": {
+      "command": "vn-mcp-blender"
     }
   }
 }
 ```
 
-File cau hinh nam o:
+File cấu hình nằm ở:
 
-| Ung dung | Duong dan |
+| Ứng dụng | Đường dẫn |
 |---|---|
 | Claude Code | `~/.claude.json` |
 | Claude Desktop (Windows) | `%APPDATA%\Claude\claude_desktop_config.json` |
 | Claude Desktop (macOS) | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 
-Khoi dong lai Claude, roi thu bao: "kiem tra ket noi Blender".
+Khởi động lại Claude, rồi thử bảo: "kiểm tra kết nối Blender".
 
-### Kiem tra nhanh khong can Claude
+### Kiểm tra nhanh không cần Claude
 
 ```bash
-blender-mcp-xaydung check
+vn-mcp-blender check
 ```
 
-## Dung thu
+## Dùng thử
 
-Mo Blender, bat addon, roi bao Claude:
+Mở Blender, bật addon, rồi bảo Claude:
 
-> Dung cho toi nha pho 5m x 14m, 1 tang, tuong bao 220 cao 3.1m, san day 100,
-> 4 cot 220x220 o bon goc. Xong thi cho toi xem anh.
+> Dựng cho tôi nhà phố 5m x 14m, 1 tầng, tường bao 220 cao 3.1m, sàn dày 100,
+> 4 cột 220x220 ở bốn góc. Xong thì cho tôi xem ảnh.
 
-Hoac dung tu ban ve co san:
+Hoặc dựng từ bản vẽ có sẵn:
 
-> Doc file F:/ban-ve/mat-bang.dxf xem co layer gi, roi dung tuong len 3D.
+> Đọc file F:/ban-ve/mat-bang.dxf xem có layer gì, rồi dựng tường lên 3D.
 
-## Kien truc
+Trong thư mục [examples/](examples/) có sẵn mô tả một căn nhà phố 5x20m, 3 tầng
+1 tum lấy từ hồ sơ thật. Dựng thử bằng:
 
-Blender khong noi chuyen MCP truc tiep duoc, nen bo nay chia hai nua:
+```bash
+blender --background --python scripts/dung-vi-du.py
+```
+
+## Kiến trúc
+
+Blender không nói chuyện MCP trực tiếp được, nên bộ này chia hai nửa:
 
 ```
 Claude  <--stdio/MCP-->  MCP server  <--socket TCP 9877-->  Addon trong Blender
 ```
 
-MCP server khai bao cong cu va doc file DXF. Addon lam moi viec dung hinh
-bang thu vien bpy. Chi tiet o [docs/kien-truc.md](docs/kien-truc.md).
+MCP server khai báo công cụ và đọc file DXF. Addon làm mọi việc dựng hình bằng
+thư viện bpy. Chi tiết ở [docs/kien-truc.md](docs/kien-truc.md).
 
-Cong mac dinh la **9877**, chon khac 9876 de khong dam voi addon blender-mcp
-pho bien neu anh dang dung ca hai.
+Cổng mặc định là **9877**, chọn khác 9876 để không đâm vào addon `blender-mcp`
+phổ biến nếu bạn đang dùng cả hai.
 
-## Phat trien
+## Phát triển
 
 ```bash
 pip install -e ".[dev]"
 pytest
 ```
 
-37 test chay duoc ma khong can mo Blender. Rieng phan hinh hoc co script tu
-kiem tra chay trong Blender that:
+50 test chạy được mà không cần mở Blender. Riêng phần hình học có script tự
+kiểm tra chạy trong Blender thật:
 
 ```bash
 blender --background --python scripts/tu-kiem-tra.py
 ```
 
-Cach them cong cu moi: [docs/phat-trien.md](docs/phat-trien.md).
+Cách thêm công cụ mới: [docs/phat-trien.md](docs/phat-trien.md).
 
-## An toan
+## An toàn
 
-Cong cu `chay_python` cho phep chay Python bat ky trong Blender. Code duoc
-soat truoc de chan xoa file, chay lenh he thong, va cac thao tac lam mat ban
-ve dang mo. Xem `src/blender_mcp_xaydung/safe_mode.py`.
+Công cụ `chay_python` cho phép chạy Python bất kỳ trong Blender. Code được soát
+trước để chặn xóa file, chạy lệnh hệ thống, và các thao tác làm mất bản vẽ đang
+mở. Xem `src/vn_mcp_blender/safe_mode.py`.
 
-Bo soat nay chan loi ro rang, khong phai tuong lua. Van nen doc code truoc
-khi cho chay tren ban ve quan trong, va luu file truoc khi lam viec lon.
+Bộ soát này chặn lỗi rõ ràng, không phải tường lửa. Vẫn nên đọc code trước khi
+cho chạy trên bản vẽ quan trọng, và lưu file trước khi làm việc lớn.
 
-Bo cong cu nay **khong gui du lieu di dau**. Khong co telemetry.
+Bộ công cụ này **không gửi dữ liệu đi đâu**. Không có telemetry.
 
-## Giay phep
+## Ghi chú về ngôn ngữ
+
+Tài liệu và chữ hiện trên giao diện viết tiếng Việt có dấu. Riêng chú thích
+trong mã nguồn viết không dấu, để chạy được trên mọi máy không phụ thuộc bảng
+mã, kể cả khi Blender dùng bản Python cũ hoặc hệ điều hành đặt locale lạ.
+
+## Giấy phép
 
 MIT. Xem [LICENSE](LICENSE).
 
-Du an doc lap, khong lien quan den Blender Foundation.
+Dự án độc lập, không liên quan đến Blender Foundation.

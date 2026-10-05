@@ -1,123 +1,125 @@
-# Kien truc
+# Kiến trúc
 
-## Vi sao phai chia hai phan
+## Vì sao phải chia hai phần
 
-Blender khong noi chuyen MCP duoc. No la phan mem do hoa, chi chay Python
-ben trong chinh no. MCP thi can mot chuong trinh doc ghi qua stdio theo
-chuan rieng.
+Blender không nói chuyện MCP được. Nó là phần mềm đồ họa, chỉ chạy Python bên
+trong chính nó. MCP thì cần một chương trình đọc ghi qua stdio theo chuẩn riêng.
 
-Nen bo nay chia lam hai:
+Nên bộ này chia làm hai:
 
 ```
           stdio (MCP)              socket TCP 9877
 Claude <----------------> MCP server <-------------> Addon trong Blender
-                          (tien trinh      JSON        (thu vien bpy)
-                           rieng)
+                          (tiến trình      JSON        (thư viện bpy)
+                           riêng)
 ```
 
-| Phan | Chay o dau | Lam gi |
+| Phần | Chạy ở đâu | Làm gì |
 |---|---|---|
-| MCP server | Tien trinh rieng, Claude tu khoi dong | Khai bao 30 cong cu, doc file DXF, soat code |
-| Addon | Ben trong Blender | Dung hinh, do khoi luong, chup anh |
+| MCP server | Tiến trình riêng, Claude tự khởi động | Khai báo 30 công cụ, đọc file DXF, soát code |
+| Addon | Bên trong Blender | Dựng hình, đo khối lượng, chụp ảnh |
 
-Phan chia nay co mot he qua can nho: **MCP server khong dung duoc hinh nao
-neu Blender chua bat ket noi**. Moi thao tac hinh hoc deu phai qua addon.
+Phân chia này có một hệ quả cần nhớ: **MCP server không dựng được hình nào nếu
+Blender chưa bật kết nối**. Mọi thao tác hình học đều phải qua addon.
 
-## Giao thuc
+## Giao thức
 
-Moi ban tin gom hai phan:
+Mỗi bản tin gồm hai phần:
 
 ```
-[4 byte do dai, big-endian] [than ban tin, JSON UTF-8]
+[4 byte độ dài, big-endian] [thân bản tin, JSON UTF-8]
 ```
 
-Yeu cau tu server sang addon:
+Yêu cầu từ server sang addon:
 
 ```json
 {"type": "create_wall", "params": {"diem_dau": [0, 0], "diem_cuoi": [5, 0]}}
 ```
 
-Tra loi tu addon, mot trong hai dang:
+Trả lời từ addon, một trong hai dạng:
 
 ```json
 {"status": "success", "result": {"ten": "Tuong_220", "dai": 5.0}}
 ```
 
 ```json
-{"status": "error", "message": "Khong co tuong ten X"}
+{"status": "error", "message": "Không có tường tên X"}
 ```
 
-### Vi sao ghi do dai len dau
+### Vì sao ghi độ dài lên đầu
 
-Socket TCP khong giu ranh gioi ban tin. Gui mot cuc 10KB thi ben nhan co the
-nhan thanh ba lan, hoac hai ban tin lien tiep dinh lam mot.
+Socket TCP không giữ ranh giới bản tin. Gửi một cục 10KB thì bên nhận có thể
+nhận thành ba lần, hoặc hai bản tin liên tiếp dính làm một.
 
-Mot so bo MCP Blender khac giai quyet bang cach doc them cho den khi JSON
-parse duoc. Cach do chay duoc nhung mong manh: neu ban tin bi cat o dung cho
-ma phan dau tinh co van la JSON hop le, no se cat nham.
+Một số bộ MCP Blender khác giải quyết bằng cách đọc thêm cho đến khi JSON parse
+được. Cách đó chạy được nhưng mỏng manh: nếu bản tin bị cắt ở đúng chỗ mà phần
+đầu tình cờ vẫn là JSON hợp lệ, nó sẽ cắt nhầm.
 
-Ghi do dai len dau thi khong phai doan. Ben nhan biet chinh xac can doc bao
-nhieu byte. Test `test_ghep_dung_khi_du_lieu_ve_tung_manh` kiem chung dieu nay
-bang cach gui tung byte mot.
+Ghi độ dài lên đầu thì không phải đoán. Bên nhận biết chính xác cần đọc bao
+nhiêu byte. Test `test_ghep_dung_khi_du_lieu_ve_tung_manh` kiểm chứng điều này
+bằng cách gửi từng byte một.
 
-## Addon chay tren luong chinh
+## Addon chạy trên luồng chính
 
-Thu vien bpy khong an toan khi goi tu luong phu. Goi bpy tu thread khac co
-the lam Blender sap ma khong bao gi.
+Thư viện bpy không an toàn khi gọi từ luồng phụ. Gọi bpy từ thread khác có thể
+làm Blender sập mà không báo gì.
 
-Nen addon khong tao thread. No dang ky mot ham chay dinh ky qua
-`bpy.app.timers`, cu 0.05 giay mot lan:
+Nên addon không tạo thread. Nó đăng ký một hàm chạy định kỳ qua
+`bpy.app.timers`, cứ 0.05 giây một lần:
 
 ```python
 def _tick(self):
     try:
-        client, _ = self.sock.accept()   # socket dat che do khong chan
+        client, _ = self.sock.accept()   # socket đặt chế độ không chặn
     except BlockingIOError:
-        return TICK_SECONDS              # chua ai goi, cho luot sau
-    self._serve(client)                  # xu ly ngay tren luong chinh
+        return TICK_SECONDS              # chưa ai gọi, chờ lượt sau
+    self._serve(client)                  # xử lý ngay trên luồng chính
     return TICK_SECONDS
 ```
 
-Socket dat che do khong chan nen `accept()` tra ve ngay neu chua ai goi.
-Khi co ket noi thi xu ly luon tren luong chinh, dung bpy thoai mai.
+Socket đặt chế độ không chặn nên `accept()` trả về ngay nếu chưa ai gọi. Khi có
+kết nối thì xử lý luôn trên luồng chính, dùng bpy thoải mái.
 
-Doi lai, mot lenh nang se lam Blender dung hinh trong luc chay. Day la danh
-doi co chu y: tha de Blender dung vai giay con hon lam no sap.
+Đổi lại, một lệnh nặng sẽ làm Blender đứng hình trong lúc chạy. Đây là đánh đổi
+có chủ ý: thà để Blender đứng vài giây còn hơn làm nó sập.
 
-## Moi ket noi mot lenh
+## Mỗi kết nối một lệnh
 
-MCP server khong giu ket noi lau. Moi lenh mo mot socket moi roi dong lai.
+MCP server không giữ kết nối lâu. Mỗi lệnh mở một socket mới rồi đóng lại.
 
-Giu ket noi lau se chet khi nguoi dung tat mo Blender, va phai viet them
-logic noi lai. Chi phi mo socket noi bo chi vai phan nghin giay, khong dang
-de danh doi lay su phuc tap do.
+Giữ kết nối lâu sẽ chết khi người dùng tắt mở Blender, và phải viết thêm logic
+nối lại. Chi phí mở socket nội bộ chỉ vài phần nghìn giây, không đáng để đánh
+đổi lấy sự phức tạp đó.
 
-## Collection rieng
+## Collection riêng
 
-Moi thu addon dung ra deu nam trong collection ten `MCP_XayDung`. Nho vay:
+Mọi thứ addon dựng ra đều nằm trong collection tên `MCP_XayDung`. Nhờ vậy:
 
-- Nguoi dung xoa sach ket qua bang mot thao tac, khong dung toi vat tu lam
-- Tool `xoa_toan_bo` mac dinh chi xoa trong collection nay
-- Tool `boc_khoi_luong` chi dem cau kien trong day
+- Người dùng xóa sạch kết quả bằng một thao tác, không đụng tới vật tự làm
+- Công cụ `xoa_toan_bo` mặc định chỉ xóa trong collection này
+- Công cụ `boc_khoi_luong` chỉ đếm cấu kiện trong đây
 
-## Nhan cau kien
+Tên collection cố tình để không dấu, vì tên này đi theo file khi xuất sang glb
+hay fbx, mà một số phần mềm nhận mô hình vẫn còn vấp ký tự Unicode.
 
-Moi object addon tao ra deu duoc gan them thuoc tinh tuy bien bat dau bang `xd_`:
+## Nhãn cấu kiện
 
-| Thuoc tinh | Y nghia |
+Mọi object addon tạo ra đều được gắn thêm thuộc tính tùy biến bắt đầu bằng `xd_`:
+
+| Thuộc tính | Ý nghĩa |
 |---|---|
 | `xd_loai` | tuong, san, cot, dam, cau_thang, mai |
-| `xd_day`, `xd_cao`, `xd_dai` | So do danh nghia luc dung |
-| `xd_diem_dau`, `xd_diem_cuoi` | Truc tim tuong, dung de khoet cua sau nay |
-| `xd_the_tich`, `xd_dien_tich` | So do tinh san |
+| `xd_day`, `xd_cao`, `xd_dai` | Số đo danh nghĩa lúc dựng |
+| `xd_diem_dau`, `xd_diem_cuoi` | Trục tim tường, dùng để khoét cửa sau này |
+| `xd_the_tich`, `xd_dien_tich` | Số đo tính sẵn |
 
-Nho cac nhan nay ma `boc_khoi_luong` gom duoc theo loai cau kien, va
-`khoet_cua` biet tuong nam o dau de dat khoi cat cho dung.
+Nhờ các nhãn này mà `boc_khoi_luong` gom được theo loại cấu kiện, và `khoet_cua`
+biết tường nằm ở đâu để đặt khối cắt cho đúng.
 
-## Boc khoi luong do tu hinh that
+## Bóc khối lượng đo từ hình thật
 
-`boc_khoi_luong` khong cong lai cac so do danh nghia. No do the tich thuc cua
-tung khoi bang bmesh:
+`boc_khoi_luong` không cộng lại các số đo danh nghĩa. Nó đo thể tích thực của
+từng khối bằng bmesh:
 
 ```python
 bm.from_mesh(obj.data)
@@ -125,45 +127,49 @@ bm.transform(obj.matrix_world)
 volume = abs(bm.calc_volume(signed=True))
 ```
 
-Nho vay cac lo cua da khoet duoc tru tu dong. Tuong 5m x 3m day 0.22 duoc
-3.300 m3; khoet cua 1.0 x 2.2 thi con dung 2.816 m3. Con so nay duoc kiem
-chung trong `scripts/tu-kiem-tra.py`.
+Nhờ vậy các lỗ cửa đã khoét được trừ tự động. Tường 5m x 3m dày 0.22 được
+3.300 m3; khoét cửa 1.0 x 2.2 thì còn đúng 2.816 m3. Con số này được kiểm chứng
+trong `scripts/tu-kiem-tra.py`.
 
-## Doc DXF o phia server
+Cách đo này còn bắt được lỗi hình học mà số đo danh nghĩa giấu đi. Lúc phát
+triển, cầu thang từng bị quay ngược mặt nên thể tích tính ra âm, phép so giữa
+thể tích đo được và thể tích tính tay phát hiện ngay.
 
-Viec doc file DXF lam o MCP server, khong lam trong addon. Ly do: thu vien
-ezdxf khong co san trong Python cua Blender, ma bat nguoi dung cai them vao
-Blender thi phien.
+## Đọc DXF ở phía server
 
-Server doc DXF, rut ra truc tim tuong va vi tri cot, roi gui sang addon duoi
-dang cac lenh dung hinh binh thuong.
+Việc đọc file DXF làm ở MCP server, không làm trong addon. Lý do: thư viện
+ezdxf không có sẵn trong Python của Blender, mà bắt người dùng cài thêm vào
+Blender thì phiền.
 
-### Cach nhan ra mot buc tuong tren ban ve
+Server đọc DXF, rút ra trục tim tường và vị trí cột, rồi gửi sang addon dưới
+dạng các lệnh dựng hình bình thường.
 
-Ban ve kien truc ve tuong bang polyline kin, hinh chu nhat rat det. Thuat toan
+### Cách nhận ra một bức tường trên bản vẽ
+
+Bản vẽ kiến trúc vẽ tường bằng polyline kín, hình chữ nhật rất dẹt. Thuật toán
 trong `dxf.py`:
 
-1. Tim canh dai nhat cua hinh, lay lam huong
-2. Chieu moi dinh len huong do va len huong vuong goc
-3. Pham vi theo huong doc la chieu dai, theo huong ngang la be day
-4. Neu chieu dai khong gap be day it nhat 2.5 lan thi bo qua, khong phai tuong
-5. Truc tim nam giua hai canh dai
+1. Tìm cạnh dài nhất của hình, lấy làm hướng
+2. Chiếu mọi đỉnh lên hướng đó và lên hướng vuông góc
+3. Phạm vi theo hướng dọc là chiều dài, theo hướng ngang là bề dày
+4. Nếu chiều dài không gấp bề dày ít nhất 2.5 lần thì bỏ qua, không phải tường
+5. Trục tim nằm giữa hai cạnh dài
 
-Cach nay doc duoc ca tuong ve xien, khong chi tuong thang theo truc. Nguong
-2.5 lan loc bo cac hinh vuong nho nhu ky hieu hay chu thich nam nham tren
-layer tuong.
+Cách này đọc được cả tường vẽ xiên, không chỉ tường thẳng theo trục. Ngưỡng
+2.5 lần lọc bỏ các hình vuông nhỏ như ký hiệu hay chú thích nằm nhầm trên
+layer tường.
 
-## Cay thu muc
+## Cây thư mục
 
 ```
-src/blender_mcp_xaydung/
-  __init__.py       Phien ban, cong mac dinh
-  server.py         Khai bao 29 tool MCP
-  connection.py     Client socket, dong goi ban tin
-  dxf.py            Doc ban ve DXF
-  safe_mode.py      Soat code Python truoc khi chay
-  addon_manager.py  Tim Blender va chep addon vao
-  cli.py            Dong lenh
-  guides/           Huong dan nghiep vu, tool huong_dan doc tu day
-  bundled/addon.py  Addon chay trong Blender
+src/vn_mcp_blender/
+  __init__.py       Phiên bản, cổng mặc định
+  server.py         Khai báo 30 công cụ MCP
+  connection.py     Client socket, đóng gói bản tin
+  dxf.py            Đọc bản vẽ DXF
+  safe_mode.py      Soát code Python trước khi chạy
+  addon_manager.py  Tìm Blender và chép addon vào
+  cli.py            Dòng lệnh
+  guides/           Hướng dẫn nghiệp vụ, công cụ huong_dan đọc từ đây
+  bundled/addon.py  Addon chạy trong Blender
 ```

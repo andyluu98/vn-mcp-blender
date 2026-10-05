@@ -1,135 +1,127 @@
-# Huong dan cai dat chi tiet
+# Hướng dẫn cài đặt chi tiết
 
-Tai lieu nay viet cho nguoi chua tung cai MCP bao gio. Lam tung buoc, moi
-buoc deu co cach kiem tra da dat chua truoc khi sang buoc sau.
+Tài liệu này viết cho người chưa từng cài MCP bao giờ. Làm từng bước, mỗi bước
+đều có cách kiểm tra đã đạt chưa trước khi sang bước sau.
 
-## Hieu truoc khi cai
+## Hiểu trước khi cài
 
-Anh se cai **hai** thu, khong phai mot:
+Bạn sẽ cài **hai** thứ, không phải một:
 
-1. **MCP server**: mot chuong trinh Python. Claude tu khoi dong no khi can.
-2. **Addon**: mot file Python nap vao trong Blender.
+1. **MCP server**: một chương trình Python. Claude tự khởi động nó khi cần.
+2. **Addon**: một file Python nạp vào trong Blender.
 
-Hai thu nay noi chuyen voi nhau qua cong 9877 tren chinh may anh.
+Hai thứ này nói chuyện với nhau qua cổng 9877 trên chính máy bạn.
 
-Vi nhu goi dien cho nguoi trong phong kin: MCP server la nguoi truc tong dai,
-addon la nguoi cam may ben trong. Thieu mot ben la khong noi duoc.
+Ví như gọi điện cho người trong phòng kín: MCP server là người trực tổng đài,
+addon là người cầm máy bên trong. Thiếu một bên là không nói được.
 
-## Buoc 0: kiem tra may da san sang
+## Bước 0: kiểm tra máy đã sẵn sàng
 
 ```bash
 python --version
 ```
 
-Phai tu 3.10 tro len. Neu chua co Python, tai o python.org, nho tich o
-"Add Python to PATH" khi cai tren Windows.
+Phải từ 3.10 trở lên. Nếu chưa có Python, tải ở python.org, nhớ tích ô
+"Add Python to PATH" khi cài trên Windows.
 
-Blender phai tu ban 3.0 tro len. Mo Blender, vao `Help > About Blender` de xem.
+Blender phải từ bản 3.0 trở lên. Mở Blender, vào `Help > About Blender` để xem.
 
-## Buoc 1: cai goi Python
-
-### Cach a: cai tu PyPI
+## Bước 1: cài gói Python
 
 ```bash
-pip install blender-mcp-xaydung
-```
-
-### Cach b: cai tu ma nguon
-
-```bash
-git clone https://github.com/ck15/blender-mcp-xaydung
-cd blender-mcp-xaydung
+git clone https://github.com/andyluu98/vn-mcp-blender
+cd vn-mcp-blender
 pip install -e .
 ```
 
-### Kiem tra
+### Kiểm tra
 
 ```bash
-blender-mcp-xaydung --version
+vn-mcp-blender --version
 ```
 
-Ra so phien ban la dat. Neu bao "command not found", thu:
+Ra số phiên bản là đạt. Nếu báo "command not found", thử:
 
 ```bash
-python -m blender_mcp_xaydung.cli --version
+python -m vn_mcp_blender.cli --version
 ```
 
-Neu cach nay chay duoc thi thu muc script cua Python chua nam trong PATH.
-Khong sao, o buoc 3 anh khai bao bang `python -m` thay vi ten lenh.
+Nếu cách này chạy được thì thư mục script của Python chưa nằm trong PATH.
+Không sao, ở bước 3 bạn khai báo bằng `python -m` thay vì tên lệnh.
 
-## Buoc 2: cai addon vao Blender
+## Bước 2: cài addon vào Blender
 
-### Cach a: de lenh tu lam
+### Cách a: để lệnh tự làm
 
 ```bash
-blender-mcp-xaydung install-addon
+vn-mcp-blender install-addon
 ```
 
-Lenh nay tim moi ban Blender tren may roi chep addon vao. No in ra duong dan
-da chep.
+Lệnh này tìm mọi bản Blender trên máy rồi chép addon vào. Nó in ra đường dẫn
+đã chép.
 
-### Cach b: cai tay
+### Cách b: cài tay
 
-Lay duong dan file addon:
+Lấy đường dẫn file addon:
 
 ```bash
-blender-mcp-xaydung addon-path
+vn-mcp-blender addon-path
 ```
 
-Roi trong Blender: `Edit > Preferences > Add-ons > Install...`, chon dung file do.
+Rồi trong Blender: `Edit > Preferences > Add-ons > Install...`, chọn đúng file đó.
 
-### Bat addon
+### Bật addon
 
-1. Trong Blender mo `Edit > Preferences > Add-ons`
-2. Go "MCP" vao o tim kiem
-3. Thay dong **Interface: MCP Xay Dung**, tich vao o vuong ben trai
-4. Dong cua so Preferences
+1. Trong Blender mở `Edit > Preferences > Add-ons`
+2. Gõ "MCP" vào ô tìm kiếm
+3. Thấy dòng **Interface: MCP Xây Dựng**, tích vào ô vuông bên trái
+4. Đóng cửa sổ Preferences
 
-### Bat ket noi
+### Bật kết nối
 
-1. Dua chuot vao khung nhin 3D, bam phim **N**. Mot thanh doc hien ra ben phai.
-2. Trong thanh do co cac tab doc. Chon tab **MCP Xay Dung**.
-3. Bam nut **Bat ket noi**.
-4. Dong chu doi thanh "Dang chay o cong 9877" kem dau tich.
+1. Đưa chuột vào khung nhìn 3D, bấm phím **N**. Một thanh dọc hiện ra bên phải.
+2. Trong thanh đó có các tab dọc. Chọn tab **MCP Xây Dựng**.
+3. Bấm nút **Bật kết nối**.
+4. Dòng chữ đổi thành "Đang chạy ở cổng 9877" kèm dấu tích.
 
-### Kiem tra
+### Kiểm tra
 
-Mo mot cua so dong lenh khac, giu Blender dang mo:
+Mở một cửa sổ dòng lệnh khác, giữ Blender đang mở:
 
 ```bash
-blender-mcp-xaydung check
+vn-mcp-blender check
 ```
 
-Phai in ra thong tin Blender. Neu bao khong noi duoc, xem [xu-ly-loi.md](xu-ly-loi.md).
+Phải in ra thông tin Blender. Nếu báo không nối được, xem [xu-ly-loi.md](xu-ly-loi.md).
 
-## Buoc 3: khai bao voi Claude
+## Bước 3: khai báo với Claude
 
 ### Claude Code
 
-Mo file `~/.claude.json` (tren Windows la `C:\Users\<ten>\.claude.json`),
-tim muc `mcpServers`, them vao:
+Mở file `~/.claude.json` (trên Windows là `C:\Users\<tên>\.claude.json`),
+tìm mục `mcpServers`, thêm vào:
 
 ```json
 {
   "mcpServers": {
-    "blender-xaydung": {
+    "vn-blender": {
       "type": "stdio",
-      "command": "blender-mcp-xaydung",
+      "command": "vn-mcp-blender",
       "args": []
     }
   }
 }
 ```
 
-Tren Windows, neu ten lenh khong chay duoc thi dung:
+Trên Windows, nếu tên lệnh không chạy được thì dùng:
 
 ```json
 {
   "mcpServers": {
-    "blender-xaydung": {
+    "vn-blender": {
       "type": "stdio",
       "command": "python",
-      "args": ["-m", "blender_mcp_xaydung.cli"]
+      "args": ["-m", "vn_mcp_blender.cli"]
     }
   }
 }
@@ -137,51 +129,50 @@ Tren Windows, neu ten lenh khong chay duoc thi dung:
 
 ### Claude Desktop
 
-File cau hinh:
+File cấu hình:
 
-| He dieu hanh | Duong dan |
+| Hệ điều hành | Đường dẫn |
 |---|---|
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | Linux | `~/.config/Claude/claude_desktop_config.json` |
 
-Noi dung giong Claude Code o tren.
+Nội dung giống Claude Code ở trên.
 
-### Kiem tra
+### Kiểm tra
 
-Khoi dong lai Claude, roi go:
+Khởi động lại Claude, rồi gõ:
 
-> kiem tra ket noi Blender
+> kiểm tra kết nối Blender
 
-Claude phai tra ve phien ban Blender va so doi tuong dang co.
+Claude phải trả về phiên bản Blender và số đối tượng đang có.
 
-## Thu tu khoi dong hang ngay
+## Thứ tự khởi động hàng ngày
 
-Moi lan lam viec, lam theo thu tu nay:
+Mỗi lần làm việc, làm theo thứ tự này:
 
-1. Mo Blender truoc
-2. Bam **Bat ket noi** trong tab MCP Xay Dung
-3. Mo Claude
+1. Mở Blender trước
+2. Bấm **Bật kết nối** trong tab MCP Xây Dựng
+3. Mở Claude
 
-Neu mo Claude truoc roi moi mo Blender van duoc, chi can bam Bat ket noi la
-xong, khong phai khoi dong lai Claude.
+Nếu mở Claude trước rồi mới mở Blender vẫn được, chỉ cần bấm Bật kết nối là
+xong, không phải khởi động lại Claude.
 
-## Dung chung voi addon blender-mcp khac
+## Dùng chung với addon blender-mcp khác
 
-Bo nay dung cong **9877**, con addon `blender-mcp` pho bien dung 9876. Hai
-cai chay song song duoc, khong dam nhau.
+Bộ này dùng cổng **9877**, còn addon `blender-mcp` phổ biến dùng 9876. Hai cái
+chạy song song được, không đâm nhau.
 
-Neu muon doi cong, sua o ca hai noi:
+Nếu muốn đổi cổng, sửa ở cả hai nơi:
 
-- Trong Blender: o "Cong" ngay tren nut Bat ket noi
-- Trong cau hinh MCP: them bien moi truong, hoac sua `DEFAULT_PORT` trong
-  `src/blender_mcp_xaydung/__init__.py` neu cai tu ma nguon
+- Trong Blender: ô "Cổng" ngay trên nút Bật kết nối
+- Trong mã nguồn: sửa `DEFAULT_PORT` trong `src/vn_mcp_blender/__init__.py`
 
-## Go cai dat
+## Gỡ cài đặt
 
 ```bash
-pip uninstall blender-mcp-xaydung
+pip uninstall vn-mcp-blender
 ```
 
-Addon trong Blender go rieng: `Edit > Preferences > Add-ons`, tim MCP Xay Dung,
-bam mui ten mo rong roi chon Remove.
+Addon trong Blender gỡ riêng: `Edit > Preferences > Add-ons`, tìm MCP Xây Dựng,
+bấm mũi tên mở rộng rồi chọn Remove.

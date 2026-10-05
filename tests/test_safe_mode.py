@@ -2,13 +2,13 @@
 
 import pytest
 
-from blender_mcp_xaydung import safe_mode
+from vn_mcp_blender import safe_mode
 
 
 @pytest.fixture(autouse=True)
 def _tat_che_do_bo_qua(monkeypatch):
     """Dam bao test khong bi anh huong boi bien moi truong cua may that."""
-    monkeypatch.delenv("BLENDER_MCP_UNSAFE", raising=False)
+    monkeypatch.delenv("VN_MCP_UNSAFE", raising=False)
 
 
 CODE_AN_TOAN = [
@@ -64,11 +64,11 @@ def test_thong_bao_liet_ke_moi_ly_do():
     text = ket_qua.message()
     assert "subprocess" in text
     assert "eval" in text
-    assert "BLENDER_MCP_UNSAFE" in text
+    assert "VN_MCP_UNSAFE" in text
 
 
 def test_che_do_bo_qua_cho_moi_thu_di_qua(monkeypatch):
-    monkeypatch.setenv("BLENDER_MCP_UNSAFE", "1")
+    monkeypatch.setenv("VN_MCP_UNSAFE", "1")
     assert safe_mode.scan("import subprocess").safe
 
 

@@ -1,4 +1,4 @@
-"""Dong lenh cua blender-mcp-xaydung.
+"""Dong lenh cua vn-mcp-blender.
 
 Khong co lenh con thi chay MCP server, day la cach Claude goi toi.
 Lenh con 'install-addon' chep addon vao Blender, 'check' thu ket noi.
@@ -19,18 +19,18 @@ def _cmd_install_addon(args: argparse.Namespace) -> int:
     try:
         written = addon_manager.install(Path(args.thu_muc) if args.thu_muc else None)
     except (FileNotFoundError, RuntimeError) as exc:
-        print(f"Loi: {exc}", file=sys.stderr)
+        print(f"Lỗi: {exc}", file=sys.stderr)
         return 1
 
-    print("Da chep addon vao:")
+    print("Đã chép addon vào:")
     for path in written:
         print(f"  {path}")
     print()
-    print("Tiep theo, trong Blender:")
+    print("Tiếp theo, trong Blender:")
     print("  1. Edit > Preferences > Add-ons")
-    print("  2. Tim 'MCP Xay Dung' roi tich vao o ben trai de bat")
-    print("  3. Trong khung nhin 3D, bam phim N de mo thanh ben")
-    print("  4. Chon tab 'MCP Xay Dung' roi bam 'Bat ket noi'")
+    print("  2. Tìm 'MCP Xây Dựng' rồi tích vào ô bên trái để bật")
+    print("  3. Trong khung nhìn 3D, bấm phím N để mở thanh bên")
+    print("  4. Chọn tab 'MCP Xây Dựng' rồi bấm 'Bật kết nối'")
     return 0
 
 
@@ -40,10 +40,10 @@ def _cmd_check(args: argparse.Namespace) -> int:
     try:
         result = conn.send("get_status")
     except BlenderConnectionError as exc:
-        print(f"Chua noi duoc: {exc}", file=sys.stderr)
+        print(f"Chưa nối được: {exc}", file=sys.stderr)
         return 1
 
-    print("Noi duoc toi Blender.")
+    print("Nối được tới Blender.")
     for key, value in result.items():
         print(f"  {key}: {value}")
     return 0
@@ -53,7 +53,7 @@ def _cmd_addon_path(args: argparse.Namespace) -> int:
     print(addon_manager.bundled_addon_path())
     dirs = addon_manager.find_addon_dirs()
     if dirs:
-        print("\nThu muc addons tim thay tren may:")
+        print("\nThư mục addons tìm thấy trên máy:")
         for d in dirs:
             print(f"  {d}")
     return 0
@@ -61,22 +61,22 @@ def _cmd_addon_path(args: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="blender-mcp-xaydung",
-        description="MCP server dung mo hinh nha 3D trong Blender.",
+        prog="vn-mcp-blender",
+        description="MCP server dựng mô hình nhà 3D trong Blender.",
     )
     parser.add_argument("--version", action="version", version=__version__)
 
     sub = parser.add_subparsers(dest="lenh")
 
-    p_install = sub.add_parser("install-addon", help="Chep addon vao Blender")
-    p_install.add_argument("--thu-muc", help="Chi dinh thu muc addons cu the")
+    p_install = sub.add_parser("install-addon", help="Chép addon vào Blender")
+    p_install.add_argument("--thu-muc", help="Chỉ định thư mục addons cụ thể")
     p_install.set_defaults(func=_cmd_install_addon)
 
-    p_check = sub.add_parser("check", help="Thu ket noi toi Blender")
-    p_check.add_argument("--cong", type=int, default=9877, help="Cong TCP")
+    p_check = sub.add_parser("check", help="Thử kết nối tới Blender")
+    p_check.add_argument("--cong", type=int, default=9877, help="Cổng TCP")
     p_check.set_defaults(func=_cmd_check)
 
-    p_path = sub.add_parser("addon-path", help="In duong dan file addon")
+    p_path = sub.add_parser("addon-path", help="In đường dẫn file addon")
     p_path.set_defaults(func=_cmd_addon_path)
 
     args = parser.parse_args(argv)

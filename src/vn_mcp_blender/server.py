@@ -23,7 +23,7 @@ from . import dxf as dxf_reader
 from . import safe_mode
 
 mcp = FastMCP(
-    "blender-mcp-xaydung",
+    "vn-mcp-blender",
     instructions=(
         "Bo cong cu dung mo hinh nha 3D trong Blender tu du lieu kien truc.\n"
         "Moi so do tinh bang met. Truoc khi dung nha, goi kiem_tra_ket_noi de "
