@@ -138,12 +138,17 @@ def _tag(obj: bpy.types.Object, loai: str, **extra) -> None:
 
 
 def _mesh_volume(obj: bpy.types.Object) -> float:
-    """The tich khoi kin, tinh bang met khoi, da ke bien doi ty le."""
+    """The tich khoi kin, tinh bang met khoi, da ke bien doi ty le.
+
+    Do tren hinh hoc DA AP modifier (boolean khoet lo cua). Doc obj.data se
+    ra khoi goc chua khoet, lam the tich tuong khong tru lo cua.
+    """
     import bmesh
 
+    depsgraph = bpy.context.evaluated_depsgraph_get()
     bm = bmesh.new()
     try:
-        bm.from_mesh(obj.data)
+        bm.from_object(obj, depsgraph)
         bm.transform(obj.matrix_world)
         return abs(bm.calc_volume(signed=True))
     finally:
@@ -740,7 +745,9 @@ class Handlers:
             volume = _mesh_volume(obj)
             g["so_luong"] += 1
             g["the_tich"] += volume
-            g["dien_tich"] += float(obj.get("xd_dien_tich", 0.0))
+            # Dien tich tuong tru phan lo cua da khoet (xd_dien_tich_lo).
+            g["dien_tich"] += (float(obj.get("xd_dien_tich", 0.0))
+                               - float(obj.get("xd_dien_tich_lo", 0.0)))
             g["doi_tuong"].append({"ten": obj.name, "the_tich_m3": round(volume, 4)})
 
         for g in groups.values():

@@ -69,6 +69,11 @@ def main():
 
     mong_doi = 5.0 * 3.0 * 0.22 - 1.0 * 2.2 * 0.22
     kiem("the tich sau khi khoet cua", the_tich_sau_khoet, mong_doi, sai_so=1e-3)
+    # Ham do cua addon (dung cho boc_khoi_luong) cung phai tru lo cua.
+    kiem("_mesh_volume sau khi khoet cua", addon._mesh_volume(obj), mong_doi, sai_so=1e-3)
+    kl_tuong = {d["ten"]: d["the_tich_m3"]
+                for d in h.compute_quantities()["cau_kien"]["tuong"]["doi_tuong"]}
+    kiem("boc_khoi_luong: the tich tuong da tru lo", kl_tuong[ten_tuong], mong_doi, sai_so=1e-3)
 
     print("\n4. San betong")
     kq = h.create_slab([[0, 0], [5, 0], [5, 14], [0, 14]], day=0.10, cao_do=3.9)
